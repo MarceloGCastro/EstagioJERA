@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                countDownTimer = new CountDownTimer(10000, 1000) {//Corrigir minutagem
+                countDownTimer = new CountDownTimer(1500000, 1000) {//Corrigir minutagem
                     @Override
                     public void onTick(long millisUntilFinished) {
                         int restante = (int) (millisUntilFinished/1000);
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         intervalButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                countDownTimer = new CountDownTimer(5000, 1000) {//Corrigir minutagem
+                countDownTimer = new CountDownTimer(300000, 1000) {//Corrigir minutagem
                     @Override
                     public void onTick(long millisUntilFinished) {
                         int restante = (int) (millisUntilFinished/1000);
