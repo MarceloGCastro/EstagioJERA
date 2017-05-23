@@ -18,6 +18,11 @@ public class MainActivity extends AppCompatActivity {
     private int cont;
     CountDownTimer countDownTimer;
     MediaPlayer mp;
+    private EditText qtdSegundos;
+    private EditText qtdMinutos;
+    private TextView segundos;
+    private TextView minutos;
+    private Button set;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,19 +32,26 @@ public class MainActivity extends AppCompatActivity {
         timerValue = (TextView) findViewById(R.id.timerValue);
         startButton = (Button) findViewById(R.id.startButton);
         intervalButton = (Button) findViewById(R.id.intervalButton);
+        qtdMinutos = (EditText) findViewById(R.id.qtdMinutos);
+        qtdSegundos = (EditText)findViewById(R.id.qtdSegundos);
+        segundos = (TextView) findViewById(R.id.segundos);
+        minutos = (TextView) findViewById(R.id.minutos);
+        set = (Button) findViewById(R.id.set);
+
 
         mp = MediaPlayer.create(this,R.raw.beep);
 
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                countDownTimer = new CountDownTimer(3000, 1000) { // Corrigir Tempo
+                countDownTimer = new CountDownTimer(1500000, 1000) {
                     @Override
                     public void onTick(long millisUntilFinished) {
                         int restante = (int) (millisUntilFinished/1000);
                         int mRestante = restante/60;
                         timerValue.setText(Integer.toString(mRestante) + ":" + Integer.toString(restante - (mRestante*60)));
                         intervalButton.setClickable(false);//Boqueia interval button
+                        set.setClickable(false);//Bloqueia set button
                     }
 
                     @Override
@@ -48,8 +60,10 @@ public class MainActivity extends AppCompatActivity {
                         cont++;
                         if(cont==4) {
                             descanso();
+                            cont = 0;
                         }
                         intervalButton.setClickable(true);
+                        set.setClickable(true);
                     }
                 }.start();
             }
@@ -58,18 +72,50 @@ public class MainActivity extends AppCompatActivity {
         intervalButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                countDownTimer = new CountDownTimer(3000, 1000) { // Corrigir Tempo
+                countDownTimer = new CountDownTimer(300000, 1000) {
                     @Override
                     public void onTick(long millisUntilFinished) {
                         int restante = (int) (millisUntilFinished/1000);
                         int mRestante = restante/60;
                         timerValue.setText(Integer.toString(mRestante) + ":" + Integer.toString(restante - (mRestante*60)));
                         startButton.setClickable(false);//Bloqueia startButton
+                        set.setClickable(false);//Bloqueia set button
                     }
 
                     @Override
                     public void onFinish() {
                         mp.start();
+                        startButton.setClickable(true);
+                        set.setClickable(true);
+                    }
+                }.start();
+            }
+        });
+
+        set.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                int minutos = Integer.parseInt(qtdMinutos.getText().toString());
+                int segundos = Integer.parseInt(qtdSegundos.getText().toString());
+                segundos *= 1000;
+                minutos *= 60000;
+                final long total = minutos + segundos;
+
+                countDownTimer = new CountDownTimer(total, 1000) {
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                        int restante = (int) (millisUntilFinished/1000);
+                        int mRestante = restante/60;
+                        timerValue.setText(Integer.toString(mRestante) + ":" + Integer.toString(restante - (mRestante*60)));
+                        intervalButton.setClickable(false);//Boqueia interval button
+                        startButton.setClickable(false);//Bloqueia start button
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        mp.start();
+                        intervalButton.setClickable(true);
                         startButton.setClickable(true);
                     }
                 }.start();

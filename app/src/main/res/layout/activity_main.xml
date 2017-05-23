@@ -39,4 +39,56 @@ tools:context="gmail820castromarcelo.com.estagiojera.MainActivity">
     android:text="@string/intervalButtonLabel"
     />
 
+    <TextView
+        android:id="@+id/minutos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/startButton"
+        android:layout_below="@+id/startButton"
+        android:layout_marginTop="45dp"
+        android:textColor="#ffffff"
+        android:text="Minutos:" />
+
+    <TextView
+        android:id="@+id/segundos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#ffffff"
+        android:text="Segundos:"
+        android:layout_alignBaseline="@+id/qtdSegundos"
+        android:layout_alignBottom="@+id/qtdSegundos"
+        android:layout_alignEnd="@+id/minutos" />
+
+    <EditText
+        android:id="@+id/qtdMinutos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/startButton"
+        android:layout_marginEnd="19dp"
+        android:layout_marginTop="34dp"
+        android:ems="10"
+        android:textColor="#ffffff"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/qtdSegundos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/qtdMinutos"
+        android:layout_below="@+id/qtdMinutos"
+        android:layout_marginTop="22dp"
+        android:ems="10"
+        android:textColor="#ffffff"
+        android:inputType="number" />
+
+    <Button
+        android:id="@+id/set"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/qtdSegundos"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="14dp"
+        android:text="SET" />
+
 </RelativeLayout>
