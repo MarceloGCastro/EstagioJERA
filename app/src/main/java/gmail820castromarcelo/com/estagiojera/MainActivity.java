@@ -9,11 +9,10 @@ import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
 
-
 public class MainActivity extends AppCompatActivity {
 
-    private Button startButton;
-    private Button intervalButton;
+    private Button iniciar;
+    private Button intervalo;
     private TextView timerValue;
     private int cont;
     CountDownTimer countDownTimer;
@@ -23,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView segundos;
     private TextView minutos;
     private Button set;
+    private TextView contDiario;
+    private int contador;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,63 +31,91 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         timerValue = (TextView) findViewById(R.id.timerValue);
-        startButton = (Button) findViewById(R.id.startButton);
-        intervalButton = (Button) findViewById(R.id.intervalButton);
+        iniciar = (Button) findViewById(R.id.iniciar);
+        intervalo = (Button) findViewById(R.id.intervalo);
         qtdMinutos = (EditText) findViewById(R.id.qtdMinutos);
         qtdSegundos = (EditText)findViewById(R.id.qtdSegundos);
         segundos = (TextView) findViewById(R.id.segundos);
         minutos = (TextView) findViewById(R.id.minutos);
         set = (Button) findViewById(R.id.set);
+        contDiario = (TextView) findViewById(R.id.contDiario);
 
+        mp = MediaPlayer.create(this,R.raw.beep);// Criando o som do final do timer
 
-        mp = MediaPlayer.create(this,R.raw.beep);
+        Thread t = new Thread() {// Zerando pomodoro a cada 24h.
+            public void run() {
+                while (!isInterrupted()) {
+                    try {
+                        Thread.sleep(86400000);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                contDiario.setText("Hoje, você fez 0 pomodoros!");
+                                contador = 0;
+                            }
+                        });
 
-        startButton.setOnClickListener(new View.OnClickListener() {
+                    } catch (InterruptedException e) {
+
+                    }
+                }
+            }
+        };
+
+        t.start();
+
+        iniciar.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) {// Fazendo as alterações do botão iniciar
                 countDownTimer = new CountDownTimer(1500000, 1000) {
                     @Override
                     public void onTick(long millisUntilFinished) {
                         int restante = (int) (millisUntilFinished/1000);
                         int mRestante = restante/60;
                         timerValue.setText(Integer.toString(mRestante) + ":" + Integer.toString(restante - (mRestante*60)));
-                        intervalButton.setClickable(false);//Boqueia interval button
+                        intervalo.setClickable(false);//Boqueia interval button
                         set.setClickable(false);//Bloqueia set button
                     }
 
                     @Override
                     public void onFinish() {
-                        mp.start();
+                        mp.start();// Tocando som do timer
                         cont++;
                         if(cont==4) {
-                            descanso();
+                            descanso();// Exibindo sugestão de intervalo
                             cont = 0;
                         }
-                        intervalButton.setClickable(true);
-                        set.setClickable(true);
+                        contador++;
+                        if(contador == 1) {
+                            contDiario.setText("Hoje, você fez 1 pomodoro!");
+                        } else {
+                            contDiario.setText("Hoje, você fez " + contador + " pomodoros!");// Contando o número de pomodoros
+                        }
+                        intervalo.setClickable(true);//Desbloqueando o botão de intervalo
+                        set.setClickable(true);// Desbloqueando o botão de set
                     }
                 }.start();
             }
         });
 
-        intervalButton.setOnClickListener(new View.OnClickListener() {
+        intervalo.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) {//Fazendo as alterações do botão de intervalo
                 countDownTimer = new CountDownTimer(300000, 1000) {
                     @Override
                     public void onTick(long millisUntilFinished) {
                         int restante = (int) (millisUntilFinished/1000);
                         int mRestante = restante/60;
                         timerValue.setText(Integer.toString(mRestante) + ":" + Integer.toString(restante - (mRestante*60)));
-                        startButton.setClickable(false);//Bloqueia startButton
-                        set.setClickable(false);//Bloqueia set button
+                        iniciar.setClickable(false);//Bloqueia o botão iniciar
+                        set.setClickable(false);//Bloqueia o botão set
                     }
 
                     @Override
                     public void onFinish() {
                         mp.start();
-                        startButton.setClickable(true);
-                        set.setClickable(true);
+                        iniciar.setClickable(true);//Desloqueia o botão iniciar
+                        set.setClickable(true);//Desloqueia o botão set
                     }
                 }.start();
             }
@@ -94,13 +123,15 @@ public class MainActivity extends AppCompatActivity {
 
         set.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) {// Fazendo alterações do botão set
 
-                int minutos = Integer.parseInt(qtdMinutos.getText().toString());
-                int segundos = Integer.parseInt(qtdSegundos.getText().toString());
-                segundos *= 1000;
+                long minutos = Long.parseLong(qtdMinutos.getText().toString());
+                long segundos = Long.parseLong(qtdSegundos.getText().toString());
+
                 minutos *= 60000;
-                final long total = minutos + segundos;
+                segundos *= 1000;
+
+                long total = minutos + segundos;
 
                 countDownTimer = new CountDownTimer(total, 1000) {
                     @Override
@@ -108,22 +139,22 @@ public class MainActivity extends AppCompatActivity {
                         int restante = (int) (millisUntilFinished/1000);
                         int mRestante = restante/60;
                         timerValue.setText(Integer.toString(mRestante) + ":" + Integer.toString(restante - (mRestante*60)));
-                        intervalButton.setClickable(false);//Boqueia interval button
-                        startButton.setClickable(false);//Bloqueia start button
+                        intervalo.setClickable(false);//Boqueia  botão de intervalo
+                        iniciar.setClickable(false);//Bloqueia botão iniciar
                     }
 
                     @Override
                     public void onFinish() {
                         mp.start();
-                        intervalButton.setClickable(true);
-                        startButton.setClickable(true);
+                        intervalo.setClickable(true);// Desbloqueia botão de intervalo
+                        iniciar.setClickable(true);// Desbloqueia botão iniciar
                     }
                 }.start();
             }
         });
     }
 
-    private void descanso() {
+    private void descanso() {//Cria AlertDialog
         AlertDialog builder = new AlertDialog.Builder(this).setTitle("Descanso").setMessage("Você executou 4 timers completos" +
                 ", talvez deva descansar 10 minutos!").setPositiveButton("OK!", new DialogInterface.OnClickListener() {
             @Override
@@ -132,4 +163,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }).show();
     }
-}
+
+ }
